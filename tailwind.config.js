@@ -4,7 +4,7 @@ module.exports = {
     extend: {
       colors: {
         bodyColor: "#152938",
-        logoColor: "white",
+        logoColor: "#FFFFFF",
       },
     },
   },
