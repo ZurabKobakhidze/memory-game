@@ -11,6 +11,7 @@ module.exports = {
         spanBlue: "#7191A5",
         selectBlue: "#BCCED9",
         yellowButton: "#FDA214",
+        playergray: "#DFE7EC",
 
       },
     },

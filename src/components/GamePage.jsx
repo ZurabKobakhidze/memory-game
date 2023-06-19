@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import iconLogo from "../assets/logo.svg";
 import ReactDOM from "react-dom";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -72,7 +73,10 @@ const iconsArray = [
 
 function GamePage() {
   const location = useLocation();
-  const { theme, players, gridSize } = location.state;
+  const { theme, gridSize } = location.state;
+  const [players] = useState(location.state.players); // Set the number of players based on the initial selection
+
+  const gridColumns = gridSize.split("x")[0];
 
   const generateArray = (size, theme) => {
     const num = size.split("x")[0];
@@ -101,13 +105,12 @@ function GamePage() {
 
   return (
     <div>
-      <h1>Game Page</h1>
-      <p>Theme: {theme}</p>
-      <p>Number of Players: {players}</p>
-      <p>Grid Size: {gridSize}</p>
+      <img src={iconLogo} alt="" />
+
       <div
         id="grid_container"
-        className="grid grid-cols-4 items-center justify-items-center"
+        style={{ gridTemplateColumns: `repeat(${gridColumns}, 1fr)` }}
+        className="grid items-center justify-items-center"
       >
         {shuffledArray.map((item, index) =>
           theme === "Numbers" ? (
@@ -116,6 +119,19 @@ function GamePage() {
             <FontAwesomeIcon key={index} icon={item.value} />
           )
         )}
+      </div>
+      <p>Number of Players: {players}</p>
+      <div className="flex gap-6 justify-center">
+        {Array.from({ length: players }, (_, i) => i + 1).map((player) => (
+          <div
+            key={player}
+            id={`player ${player}`}
+            className="w-16 h-18 bg-playergray rounded-sm flex justify-center items-center flex-col"
+          >
+            <p>p{player}</p>
+            <p>0</p>
+          </div>
+        ))}
       </div>
     </div>
   );
