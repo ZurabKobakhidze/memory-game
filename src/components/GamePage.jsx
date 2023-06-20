@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import iconLogo from "../assets/logo.svg";
-import ReactDOM from "react-dom";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome, faUser, faLock, faCog, faTrash, faSearch, faStar, faHeart, faCamera, faWifi } from "@fortawesome/free-solid-svg-icons";
@@ -54,7 +53,9 @@ function GamePage() {
   const location = useLocation();
   const { theme, gridSize } = location.state;
   const [players] = useState(location.state.players);
-  
+
+  const [flippedCount, setFlippedCount] = useState(0);
+  const [flippedIndexes, setFlippedIndexes] = useState([]);
 
   const gridColumns = gridSize.split("x")[0];
 
@@ -69,13 +70,17 @@ function GamePage() {
       initialArray = Array.from({ length: halfSquareNum }, (_, i) => ({
         id: i + 1,
         value: i + 1,
-        isClicked: false
+     
+        isClicked: false,
+        isMatch: false
       }));
     } else if (theme === "Icons") {
       initialArray = Array.from({ length: halfSquareNum }, (_, i) => ({
         id: i + 1,
         value: iconsArray[i % iconsArray.length],
-        isClicked: false
+        
+        isClicked: false,
+        isMatch: false
       }));
     }
 
@@ -87,9 +92,29 @@ function GamePage() {
 
   const [items, setItems] = useState(shuffledArray);
 
-  const handleClick = (index) => {
+ const handleClick = (index) => {
+    if (flippedIndexes.includes(index)) return;
+
     setItems(items.map((item, i) => i === index ? { ...item, isClicked: true } : item));
+
+    if (flippedCount === 0) {
+        setFlippedIndexes([index]);
+        setFlippedCount(flippedCount + 1);
+    } else if (flippedCount === 1) {
+        const firstIndex = flippedIndexes[0];
+        if (items[index].id === items[firstIndex].id) {
+            setFlippedCount(0);
+            setFlippedIndexes([]);
+            setItems(items.map((item, i) => (i === index || i === firstIndex) ? { ...item, isMatch: true } : item));
+        } else {
+            setItems(items.map((item, i) => (i === index || i === firstIndex) ? { ...item, isClicked: false } : item));
+            setFlippedCount(0);
+            setFlippedIndexes([]);
+        }
+    }
   };
+
+  console.log(items);
 
   return (
     <div>
@@ -104,10 +129,12 @@ function GamePage() {
           <div
             key={index}
             id="circle"
-            className={`rounded-full w-[47px] h-[47px] flex justify-center items-center ${item.isClicked ? 'bg-playergray ' : 'bg-bodyColor'}`}
+            className={`rounded-full w-[47px] h-[47px] flex justify-center items-center 
+              ${item.isClicked || item.isMatch ? 'bg-playergray ' : 'bg-bodyColor'}
+              ${item.isMatch ? 'bg-yellow-500' : ''}`}
             onClick={() => handleClick(index)}
           >
-            {item.isClicked && (theme === "Numbers" ? (
+            {(item.isClicked || item.isMatch) && (theme === "Numbers" ? (
               <p>{item.value}</p>
             ) : (
               <FontAwesomeIcon icon={item.value} />
