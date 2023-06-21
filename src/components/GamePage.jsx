@@ -56,6 +56,7 @@ function GamePage() {
 
   const [flippedCount, setFlippedCount] = useState(0);
   const [flippedIndexes, setFlippedIndexes] = useState([]);
+  const [flipBack, setFlipBack] = useState(false);
 
   const gridColumns = gridSize.split("x")[0];
 
@@ -70,7 +71,6 @@ function GamePage() {
       initialArray = Array.from({ length: halfSquareNum }, (_, i) => ({
         id: i + 1,
         value: i + 1,
-     
         isClicked: false,
         isMatch: false
       }));
@@ -78,7 +78,6 @@ function GamePage() {
       initialArray = Array.from({ length: halfSquareNum }, (_, i) => ({
         id: i + 1,
         value: iconsArray[i % iconsArray.length],
-        
         isClicked: false,
         isMatch: false
       }));
@@ -92,27 +91,39 @@ function GamePage() {
 
   const [items, setItems] = useState(shuffledArray);
 
- const handleClick = (index) => {
-    if (flippedIndexes.includes(index)) return;
+  const handleClick = (index) => {
+    if (flippedIndexes.includes(index) || items[index].isMatch) return;
 
-    setItems(items.map((item, i) => i === index ? { ...item, isClicked: true } : item));
+    const newItems = items.map((item, i) => i === index ? { ...item, isClicked: true } : item);
+    setItems(newItems);
 
     if (flippedCount === 0) {
-        setFlippedIndexes([index]);
-        setFlippedCount(flippedCount + 1);
+      setFlippedIndexes([index]);
+      setFlippedCount(flippedCount + 1);
     } else if (flippedCount === 1) {
-        const firstIndex = flippedIndexes[0];
-        if (items[index].id === items[firstIndex].id) {
-            setFlippedCount(0);
-            setFlippedIndexes([]);
-            setItems(items.map((item, i) => (i === index || i === firstIndex) ? { ...item, isMatch: true } : item));
-        } else {
-            setItems(items.map((item, i) => (i === index || i === firstIndex) ? { ...item, isClicked: false } : item));
-            setFlippedCount(0);
-            setFlippedIndexes([]);
-        }
+      setFlippedIndexes(prev => [...prev, index]);
+      setFlippedCount(flippedCount + 1);
     }
   };
+
+  useEffect(() => {
+    if (flippedCount === 2) {
+      const [index1, index2] = flippedIndexes;
+      if (items[index1].id !== items[index2].id) {
+        setTimeout(() => {
+          setItems(prev => prev.map((item, i) => 
+            (i === index1 || i === index2) ? { ...item, isClicked: false } : item));
+          setFlippedIndexes([]);
+          setFlippedCount(0);
+        }, 1000); 
+      } else {
+        setItems(prev => prev.map((item, i) =>
+          (i === index1 || i === index2) ? { ...item, isMatch: true } : item));
+        setFlippedIndexes([]);
+        setFlippedCount(0);
+      }
+    }
+  }, [flippedCount]);
 
   console.log(items);
 
