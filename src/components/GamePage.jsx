@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import iconLogo from "../assets/logo.svg";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import GameOver from "./GameOver";
 import {
   faHome,
   faUser,
@@ -77,11 +78,10 @@ function GamePage() {
 
   const [flippedCount, setFlippedCount] = useState(0);
   const [flippedIndexes, setFlippedIndexes] = useState([]);
-  const [flipBack, setFlipBack] = useState(false);
   const [currentPlayer, setCurrentPlayer] = useState(0);
   const [scores, setScores] = useState(Array(players).fill(0));
   const [timer, setTimer] = useState(0);
-  const [moves, setMoves] = useState(0); 
+  const [moves, setMoves] = useState(0);
 
   const gridColumns = gridSize.split("x")[0];
 
@@ -124,9 +124,9 @@ function GamePage() {
     )
       return;
 
-      if (flippedCount === 1) {
-        setMoves(moves + 1);
-      }
+    if (flippedCount === 1) {
+      setMoves(moves + 1);
+    }
 
     const newItems = items.map((item, i) =>
       i === index ? { ...item, isClicked: true } : item
@@ -176,22 +176,31 @@ function GamePage() {
     }
   }, [flippedCount]);
 
+  const isGameOver = items.every((item) => item.isMatch);
+  const [gameOver, setGameOver] = useState(isGameOver);
+
+  useEffect(() => {
+    setGameOver(items.every((item) => item.isMatch));
+  }, [items]);
+
   useEffect(() => {
     let interval;
-    if (players === 1) {
+    if (players === 1 && !gameOver) {
       interval = setInterval(() => {
         setTimer((prev) => prev + 1);
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [players]);
+  }, [players, gameOver]);
 
   console.log(currentPlayer);
 
   return (
     <div>
-      <img src={iconLogo} alt="" />
-
+      <div id="header" className="flex justify-between items-center" >
+        <img src={iconLogo} alt="" />
+        <button className="w-[78px] h-[40px] rounded-full bg-yellowButton text-logoColor text-center text-[16px] font-atkinson font-700">Menu</button>
+      </div>
       <div
         id="grid_container"
         style={{ gridTemplateColumns: `repeat(${gridColumns}, 1fr)` }}
@@ -227,7 +236,7 @@ function GamePage() {
               key={player}
               id={`player ${player}`}
               className={`w-full h-18 rounded-sm flex justify-center items-center flex-col ${
-                player - 1 === currentPlayer ? "bg-yellow-500" : "bg-playergray"
+                player - 1 === currentPlayer ? "bg-yellowButton" : "bg-playergray"
               }`}
             >
               <p>p{player}</p>
@@ -238,7 +247,7 @@ function GamePage() {
       )}
       {players === 1 && (
         <div className="flex gap-6 justify-center">
-           <div className="w-full h-18 rounded-sm flex justify-center items-center flex-col">
+          <div className="w-full h-18 rounded-sm flex justify-center items-center flex-col">
             <p>Moves</p>
             <p>{moves}</p>
           </div>
@@ -248,7 +257,14 @@ function GamePage() {
           </div>
         </div>
       )}
-
+      {isGameOver && (
+        <GameOver
+          players={players}
+          scores={scores}
+          moves={moves}
+          time={timer}
+        />
+      )}
     </div>
   );
 }
