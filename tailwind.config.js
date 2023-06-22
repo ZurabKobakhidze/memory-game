@@ -12,6 +12,7 @@ module.exports = {
         selectBlue: "#BCCED9",
         yellowButton: "#FDA214",
         playergray: "#DFE7EC",
+        timerColor: "#304859",
 
       },
     },

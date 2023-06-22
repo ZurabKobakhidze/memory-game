@@ -195,17 +195,27 @@ function GamePage() {
     return () => clearInterval(interval);
   }, [players, gameOver]);
 
-  // Format the timer value as mm:ss
   const formattedTime = React.useMemo(() => {
-    const minutes = Math.floor(timer / 60).toString().padStart(2, "0");
+    const minutes = Math.floor(timer / 60)
+      .toString()
+      .padStart(2, "0");
     const seconds = (timer % 60).toString().padStart(2, "0");
     return `${minutes}:${seconds}`;
   }, [timer]);
 
+  const circleSize =
+    gridSize === "4x4"
+      ? "72.5px"
+      : gridSize === "6x6"
+      ? "47px"
+      : "default size";
+  const gapSize =
+    gridSize === "4x4" ? "12px" : gridSize === "6x6" ? "9px" : "default";
+
   return (
-    <div>
-      <div id="header" className="flex justify-between items-center">
-        <img src={iconLogo} alt="" />
+    <div className="p-[24px] box-border flex flex-col items-center">
+      <div id="header" className="w-full flex justify-between items-center">
+        <img className="w-[92px]" src={iconLogo} alt="" />
         <button
           className="w-[78px] h-[40px] rounded-full bg-yellowButton text-logoColor text-center text-[16px] font-atkinson font-700"
           onClick={() => setIsMenuOpen(true)}
@@ -215,59 +225,89 @@ function GamePage() {
       </div>
       <div
         id="grid_container"
-        style={{ gridTemplateColumns: `repeat(${gridColumns}, 1fr)` }}
-        className="grid items-center justify-items-center"
+        style={{
+          gridTemplateColumns: `repeat(${gridColumns}, 1fr)`,
+          gap: gapSize,
+        }}
+        className="mt-[80px] grid items-center justify-center h-[327px] w-[327px]"
       >
         {items.map((item, index) => (
           <div
             key={index}
             id="circle"
-            className={`rounded-full w-[47px] h-[47px] flex justify-center items-center 
-              ${
-                item.isClicked || item.isMatch
-                  ? "bg-playergray "
-                  : "bg-bodyColor"
-              }
-              ${item.isMatch ? "bg-yellowButton" : ""}`}
+            className={`rounded-full flex justify-center items-center ${
+              item.isClicked || item.isMatch ? "bg-selectBlue" : "bg-bodyColor"
+            } ${item.isMatch ? "bg-yellowButton" : ""}`}
+            style={{ width: circleSize, height: circleSize }}
             onClick={() => handleClick(index)}
           >
             {(item.isClicked || item.isMatch) &&
               (theme === "Numbers" ? (
-                <p>{item.value}</p>
+                <p className="text-white text-center text-[25px] font-bold font-atkinson">
+                  {item.value}
+                </p>
               ) : (
-                <FontAwesomeIcon icon={item.value} />
+                <FontAwesomeIcon
+                  icon={item.value}
+                  className="text-white text-[25px]"
+                />
               ))}
           </div>
         ))}
       </div>
 
       {players > 1 && (
-        <div className="flex gap-6 justify-center">
+        <div className="relative flex gap-[25px] justify-center mt-[102px] w-full">
           {Array.from({ length: players }, (_, i) => i + 1).map((player) => (
             <div
               key={player}
               id={`player ${player}`}
-              className={`w-full h-18 rounded-sm flex justify-center items-center flex-col ${
+              className={`w-full h-[70px] bg-playergray rounded-[5px] flex  items-center flex-col ${
                 player - 1 === currentPlayer
                   ? "bg-yellowButton"
                   : "bg-playergray"
               }`}
             >
-              <p>p{player}</p>
-              <p>{scores[player - 1]}</p>
+              {player - 1 === currentPlayer && (
+                <div id="triangle" className="absolute top-[-60px]  w-0 h-0 border-transparent border-[20px] border-solid border-t-[50px] border-l-[20px] border-r-[20px] border-b-yellowButton"></div>
+              )}
+              <p
+                className={`text-[15px] font-700 font-atkinson mt-[10px] ${
+                  player - 1 === currentPlayer ? "text-white" : "text-spanBlue"
+                }`}
+              >
+                P{player}
+              </p>
+              <p
+                className={`text-[24px] font-700 font-atkinson ${
+                  player - 1 === currentPlayer
+                    ? "text-white"
+                    : "text-timerColor"
+                }`}
+              >
+                {scores[player - 1]}
+              </p>
             </div>
           ))}
         </div>
       )}
       {players === 1 && (
-        <div className="flex gap-6 justify-center">
-          <div className="w-full h-18 rounded-sm flex justify-center items-center flex-col">
-            <p>Moves</p>
-            <p>{moves}</p>
+        <div className="flex gap-[25px] justify-center mt-[102px] w-full">
+          <div className="w-full h-[70px] bg-playergray rounded-[5px] flex  items-center flex-col">
+            <p className="text-spanBlue text-[15px] font-700 font-atkinson mt-[10px]">
+              Timer
+            </p>
+            <p className="text-timerColor text-[24px] font-700 font-atkinson">
+              {formattedTime}
+            </p>
           </div>
-          <div className="w-full h-18 rounded-sm flex justify-center items-center flex-col">
-            <p>Timer</p>
-            <p>{formattedTime}</p>
+          <div className="w-full h-[70px] bg-playergray rounded-[5px] flex  items-center flex-col">
+            <p className="text-spanBlue text-[15px] font-700 font-atkinson mt-[10px]">
+              Moves
+            </p>
+            <p className="text-timerColor text-[24px] font-700 font-atkinson">
+              {moves}
+            </p>
           </div>
         </div>
       )}
@@ -279,9 +319,7 @@ function GamePage() {
           time={timer}
         />
       )}
-      {isMenuOpen && (
-        <MenuHamburger closeMenu={() => setIsMenuOpen(false)} />
-      )}
+      {isMenuOpen && <MenuHamburger closeMenu={() => setIsMenuOpen(false)} />}
     </div>
   );
 }
