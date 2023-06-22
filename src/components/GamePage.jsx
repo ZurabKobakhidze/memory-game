@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import iconLogo from "../assets/logo.svg";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import MenuHamburger from './MenuHamburger';
 import GameOver from "./GameOver";
 import {
   faHome,
@@ -82,6 +83,7 @@ function GamePage() {
   const [scores, setScores] = useState(Array(players).fill(0));
   const [timer, setTimer] = useState(0);
   const [moves, setMoves] = useState(0);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const gridColumns = gridSize.split("x")[0];
 
@@ -199,7 +201,7 @@ function GamePage() {
     <div>
       <div id="header" className="flex justify-between items-center" >
         <img src={iconLogo} alt="" />
-        <button className="w-[78px] h-[40px] rounded-full bg-yellowButton text-logoColor text-center text-[16px] font-atkinson font-700">Menu</button>
+        <button className="w-[78px] h-[40px] rounded-full bg-yellowButton text-logoColor text-center text-[16px] font-atkinson font-700" onClick={() => setIsMenuOpen(true)}>Menu</button>
       </div>
       <div
         id="grid_container"
@@ -265,6 +267,8 @@ function GamePage() {
           time={timer}
         />
       )}
+      {isMenuOpen && <MenuHamburger closeMenu={() => setIsMenuOpen(false)} />}
+        
     </div>
   );
 }
