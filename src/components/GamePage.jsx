@@ -78,7 +78,10 @@ function GamePage() {
   const [flippedCount, setFlippedCount] = useState(0);
   const [flippedIndexes, setFlippedIndexes] = useState([]);
   const [flipBack, setFlipBack] = useState(false);
-  const [currentPlayer, setCurrentPlayer] = useState(0); 
+  const [currentPlayer, setCurrentPlayer] = useState(0);
+  const [scores, setScores] = useState(Array(players).fill(0));
+  const [timer, setTimer] = useState(0);
+  const [moves, setMoves] = useState(0); 
 
   const gridColumns = gridSize.split("x")[0];
 
@@ -121,6 +124,10 @@ function GamePage() {
     )
       return;
 
+      if (flippedCount === 1) {
+        setMoves(moves + 1);
+      }
+
     const newItems = items.map((item, i) =>
       i === index ? { ...item, isClicked: true } : item
     );
@@ -159,9 +166,25 @@ function GamePage() {
         );
         setFlippedIndexes([]);
         setFlippedCount(0);
+
+        setScores((prev) => {
+          const newScores = [...prev];
+          newScores[currentPlayer] += 1;
+          return newScores;
+        });
       }
     }
   }, [flippedCount]);
+
+  useEffect(() => {
+    let interval;
+    if (players === 1) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [players]);
 
   console.log(currentPlayer);
 
@@ -197,18 +220,35 @@ function GamePage() {
         ))}
       </div>
 
-      <div className="flex gap-6 justify-center">
-      {Array.from({ length: players }, (_, i) => i + 1).map((player) => (
-        <div
-          key={player}
-          id={`player ${player}`}
-          className={`w-full h-18 rounded-sm flex justify-center items-center flex-col ${player - 1 === currentPlayer ? 'bg-yellow-500' : 'bg-playergray'}`}
-        >
-          <p>p{player}</p>
-          <p>0</p>
+      {players > 1 && (
+        <div className="flex gap-6 justify-center">
+          {Array.from({ length: players }, (_, i) => i + 1).map((player) => (
+            <div
+              key={player}
+              id={`player ${player}`}
+              className={`w-full h-18 rounded-sm flex justify-center items-center flex-col ${
+                player - 1 === currentPlayer ? "bg-yellow-500" : "bg-playergray"
+              }`}
+            >
+              <p>p{player}</p>
+              <p>{scores[player - 1]}</p>
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
+      )}
+      {players === 1 && (
+        <div className="flex gap-6 justify-center">
+           <div className="w-full h-18 rounded-sm flex justify-center items-center flex-col">
+            <p>Moves</p>
+            <p>{moves}</p>
+          </div>
+          <div className="w-full h-18 rounded-sm flex justify-center items-center flex-col">
+            <p>Timer</p>
+            <p>{timer} seconds</p>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
