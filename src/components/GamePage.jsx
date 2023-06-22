@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import iconLogo from "../assets/logo.svg";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import MenuHamburger from './MenuHamburger';
+import MenuHamburger from "./MenuHamburger";
 import GameOver from "./GameOver";
 import {
   faHome,
@@ -195,13 +195,23 @@ function GamePage() {
     return () => clearInterval(interval);
   }, [players, gameOver]);
 
-  console.log(currentPlayer);
+  // Format the timer value as mm:ss
+  const formattedTime = React.useMemo(() => {
+    const minutes = Math.floor(timer / 60).toString().padStart(2, "0");
+    const seconds = (timer % 60).toString().padStart(2, "0");
+    return `${minutes}:${seconds}`;
+  }, [timer]);
 
   return (
     <div>
-      <div id="header" className="flex justify-between items-center" >
+      <div id="header" className="flex justify-between items-center">
         <img src={iconLogo} alt="" />
-        <button className="w-[78px] h-[40px] rounded-full bg-yellowButton text-logoColor text-center text-[16px] font-atkinson font-700" onClick={() => setIsMenuOpen(true)}>Menu</button>
+        <button
+          className="w-[78px] h-[40px] rounded-full bg-yellowButton text-logoColor text-center text-[16px] font-atkinson font-700"
+          onClick={() => setIsMenuOpen(true)}
+        >
+          Menu
+        </button>
       </div>
       <div
         id="grid_container"
@@ -238,7 +248,9 @@ function GamePage() {
               key={player}
               id={`player ${player}`}
               className={`w-full h-18 rounded-sm flex justify-center items-center flex-col ${
-                player - 1 === currentPlayer ? "bg-yellowButton" : "bg-playergray"
+                player - 1 === currentPlayer
+                  ? "bg-yellowButton"
+                  : "bg-playergray"
               }`}
             >
               <p>p{player}</p>
@@ -255,7 +267,7 @@ function GamePage() {
           </div>
           <div className="w-full h-18 rounded-sm flex justify-center items-center flex-col">
             <p>Timer</p>
-            <p>{timer} seconds</p>
+            <p>{formattedTime}</p>
           </div>
         </div>
       )}
@@ -267,8 +279,9 @@ function GamePage() {
           time={timer}
         />
       )}
-      {isMenuOpen && <MenuHamburger closeMenu={() => setIsMenuOpen(false)} />}
-        
+      {isMenuOpen && (
+        <MenuHamburger closeMenu={() => setIsMenuOpen(false)} />
+      )}
     </div>
   );
 }
