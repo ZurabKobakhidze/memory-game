@@ -299,10 +299,10 @@ function GamePage() {
             <div
               key={player}
               id={`player ${player}`}
-              className={`w-full h-[70px] bg-playergray rounded-[5px] flex  items-center flex-col tablet:items-start tablet:pl-[16px] tablet:flex-col tablet:box-border desktop:flex-row desktop:items-center desktop:justify-between desktop:pl-[21px] desktop:pr-[24px] ${
+              className={`w-full h-[70px] bg-playergray rounded-[5px] flex  items-center flex-col   tablet:flex-col tablet:box-border tablet:justify-center desktop:items-center desktop:justify-between desktop:pl-[21px] desktop:justify-center  ${
                 player - 1 === currentPlayer
-                  ? "bg-yellowButton "
-                  : "bg-playergray"
+                  ? "bg-yellowButton tablet:bg-yellowButton "
+                  : "bg-playergray tablet:bg-playergray"
               }`}
             >
               {player - 1 === currentPlayer && (
@@ -311,32 +311,41 @@ function GamePage() {
                   className="absolute top-[-60px]  w-0 h-0 border-transparent border-[20px] border-solid border-t-[50px] border-l-[20px] border-r-[20px] border-b-yellowButton "
                 ></div>
               )}
+              <div
+                id="inside_div_players"
+                className="flex flex-col tablet:flex-row tablet:pl-[16px] tablet:items-center tablet:justify-between  tablet:w-full tablet:pr-[24px] tablet:box-border desktop:h-[72px]"
+              >
+                <p
+                  className={`text-[15px] font-700 font-atkinson mt-[10px] tablet:hidden  ${
+                    player - 1 === currentPlayer
+                      ? "text-white tablet:text-white"
+                      : "text-spanBlue"
+                  }`}
+                >
+                  P{player}
+                </p>
+                <p
+                  className={`text-[15px]  font-700 font-atkinson hidden tablet:block desktop:text-[18px] ${
+                    player - 1 === currentPlayer
+                      ? "text-white tablet:text-white"
+                      : "text-spanBlue"
+                  }`}
+                >
+                  Player {player}
+                </p>
+                <p
+                  className={`text-[24px] font-700 font-atkinson tablet:text-[32px] ${
+                    player - 1 === currentPlayer
+                      ? "text-white tablet:text-white"
+                      : "text-timerColor tablet:text-timerColor"
+                  }`}
+                >
+                  {scores[player - 1]}
+                </p>
+              </div>
 
-              <p
-                className={`text-[15px] font-700 font-atkinson mt-[10px] tablet:hidden  ${
-                  player - 1 === currentPlayer ? "text-white" : "text-spanBlue"
-                }`}
-              >
-                P{player}
-              </p>
-              <p
-                className={`text-[15px] mt-[10px] font-700 font-atkinson hidden tablet:block desktop:text-[18px] ${
-                  player - 1 === currentPlayer ? "text-white" : "text-spanBlue"
-                }`}
-              >
-                Player {player}
-              </p>
-              <p
-                className={`text-[24px] font-700 font-atkinson tablet:text-[32px]${
-                  player - 1 === currentPlayer
-                    ? "text-white tablet:text-white"
-                    : "text-timerColor tablet:text-timerColor"
-                }`}
-              >
-                {scores[player - 1]}
-              </p>
               {player - 1 === currentPlayer && (
-                <p className="absolute top-[55px] hidden desktop:block desktop:text-bodyColor desktop:text-center desktop:text-[13px] desktop:font-atkinson desktop:font-700 desktop:tracking-wider desktop:mt-[23px] desktop:w-[225px]">
+                <p className="absolute hidden desktop:block desktop:text-bodyColor desktop:text-center desktop:text-[13px] desktop:font-atkinson desktop:font-700 desktop:tracking-wider desktop:top-[95px] desktop:w-[225px]">
                   CURRENT TURN
                 </p>
               )}
