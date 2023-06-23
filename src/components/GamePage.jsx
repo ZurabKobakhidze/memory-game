@@ -233,7 +233,7 @@ function GamePage() {
   };
 
   return (
-    <div className="p-[24px] box-border flex flex-col items-center tablet:p-[40px]">
+    <div className="p-[24px] box-border flex flex-col items-center tablet:p-[40px] desktop:pt-[67px] desktop:pr-[165px] desktop:pl-[165px] desktop:pb-[74px] ">
       <div id="header" className="w-full flex justify-between items-center">
         <img className="w-[92px] tablet:w-[153px]" src={iconLogo} alt="" />
         <button
@@ -251,7 +251,7 @@ function GamePage() {
           </button>
           <button
             onClick={handleBack}
-            className="bg-playergray text-timerColor text-center text-[20px] font-atkinson font-700 w-[149px] h-[52px] rounded-[26px]"
+            className="bg-playergray text-timerColor text-center text-[20px] font-atkinson font-700 w-[149px] h-[52px] rounded-[26px] hover:bg-hoverColor hover:text-white ease-in-out duration-300"
           >
             New Game
           </button>
@@ -263,13 +263,17 @@ function GamePage() {
           gridTemplateColumns: `repeat(${gridColumns}, 1fr)`,
           gap: gapSize,
         }}
-        className="mt-[80px] grid items-center justify-center h-[327px] w-[327px] tablet:mt-[157px] tablet:w-[532px] tablet:h-[532px]"
+        className="justify-items-center mt-[80px] grid items-center justify-center h-[327px] w-[327px] tablet:mt-[157px] tablet:w-[532px] tablet:h-[532px]"
       >
         {items.map((item, index) => (
           <div
             key={index}
             id="circle"
-            className={`rounded-full flex justify-center items-center  ${circleSize}  ${
+            className={`rounded-full flex justify-center items-center ${
+              item.isClicked || item.isMatch
+                ? ""
+                : "hover:bg-hoverColor ease-in-out duration-300"
+            } ${circleSize} ${
               item.isClicked || item.isMatch ? "bg-selectBlue" : "bg-bodyColor"
             } ${item.isMatch ? "bg-yellowButton" : ""}`}
             onClick={() => handleClick(index)}
@@ -295,60 +299,67 @@ function GamePage() {
             <div
               key={player}
               id={`player ${player}`}
-              className={`w-full h-[70px] bg-playergray rounded-[5px] flex  items-center flex-col  ${
+              className={`w-full h-[70px] bg-playergray rounded-[5px] flex  items-center flex-col tablet:items-start tablet:pl-[16px] tablet:flex-col tablet:box-border desktop:flex-row desktop:items-center desktop:justify-between desktop:pl-[21px] desktop:pr-[24px] ${
                 player - 1 === currentPlayer
-                  ? "bg-yellowButton"
+                  ? "bg-yellowButton "
                   : "bg-playergray"
               }`}
             >
               {player - 1 === currentPlayer && (
                 <div
                   id="triangle"
-                  className="absolute top-[-60px]  w-0 h-0 border-transparent border-[20px] border-solid border-t-[50px] border-l-[20px] border-r-[20px] border-b-yellowButton"
+                  className="absolute top-[-60px]  w-0 h-0 border-transparent border-[20px] border-solid border-t-[50px] border-l-[20px] border-r-[20px] border-b-yellowButton "
                 ></div>
               )}
+
               <p
-                className={`text-[15px] font-700 font-atkinson mt-[10px] tablet:hidden ${
+                className={`text-[15px] font-700 font-atkinson mt-[10px] tablet:hidden  ${
                   player - 1 === currentPlayer ? "text-white" : "text-spanBlue"
                 }`}
               >
-                P{player} 
+                P{player}
               </p>
               <p
-                className={`text-[15px] font-700 font-atkinson mt-[10px] hidden tablet:block ${
+                className={`text-[15px] mt-[10px] font-700 font-atkinson hidden tablet:block desktop:text-[18px] ${
                   player - 1 === currentPlayer ? "text-white" : "text-spanBlue"
                 }`}
               >
-                Player {player} 
+                Player {player}
               </p>
               <p
-                className={`text-[24px] font-700 font-atkinson ${
+                className={`text-[24px] font-700 font-atkinson tablet:text-[32px]${
                   player - 1 === currentPlayer
-                    ? "text-white"
-                    : "text-timerColor"
+                    ? "text-white tablet:text-white"
+                    : "text-timerColor tablet:text-timerColor"
                 }`}
               >
                 {scores[player - 1]}
               </p>
+              {player - 1 === currentPlayer && (
+                <p className="absolute top-[55px] hidden desktop:block desktop:text-bodyColor desktop:text-center desktop:text-[13px] desktop:font-atkinson desktop:font-700 desktop:tracking-wider desktop:mt-[23px] desktop:w-[225px]">
+                  CURRENT TURN
+                </p>
+              )}
             </div>
           ))}
         </div>
       )}
+
       {players === 1 && (
-        <div className="flex gap-[25px] justify-center mt-[102px] w-full">
-          <div className="w-full h-[70px] bg-playergray rounded-[5px] flex  items-center flex-col">
-            <p className="text-spanBlue text-[15px] font-700 font-atkinson mt-[10px]">
+        <div className="flex gap-[25px] justify-center mt-[102px] w-full tablet:gap-[30px]">
+          <div className="w-full h-[70px] bg-playergray rounded-[5px] flex  items-center flex-col tablet:w-[225px] h-[72px] tablet:flex-row tablet:justify-between pl-[16px] pr-[16px]">
+            <p className="text-spanBlue text-[15px] font-700 font-atkinson mt-[10px] tablet:mt-[0]">
               Timer
             </p>
             <p className="text-timerColor text-[24px] font-700 font-atkinson">
               {formattedTime}
             </p>
           </div>
-          <div className="w-full h-[70px] bg-playergray rounded-[5px] flex  items-center flex-col">
-            <p className="text-spanBlue text-[15px] font-700 font-atkinson mt-[10px]">
+          <div className="w-full h-[70px] bg-playergray rounded-[5px] flex  items-center flex-col tablet:w-[225px] tablet:flex-row tablet:justify-between pl-[16px] pr-[16px] ">
+            <p className="text-spanBlue text-[15px] font-700 font-atkinson mt-[10px] tablet:mt-[0]">
               Moves
             </p>
-            <p className="text-timerColor text-[24px] font-700 font-atkinson">
+            <p className="text-timerColor text-[24px] font-700 font-atkinson tablet:text-[32px]">
               {moves}
             </p>
           </div>
