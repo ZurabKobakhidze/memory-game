@@ -13,7 +13,12 @@ module.exports = {
         yellowButton: "#FDA214",
         playergray: "#DFE7EC",
         timerColor: "#304859",
-
+        hoverColor: "#6395B8",
+        hoverYellow: "#FFB84A",
+      },
+      screens: {
+        tablet: "768px",
+        desktop: "1440px",
       },
     },
   },

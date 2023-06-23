@@ -74,9 +74,8 @@ const iconsArray = [
 
 function GamePage() {
   const location = useLocation();
-  const { theme, gridSize } = location.state;
+  const {theme, gridSize } = location.state;
   const [players] = useState(location.state.players);
-
   const [flippedCount, setFlippedCount] = useState(0);
   const [flippedIndexes, setFlippedIndexes] = useState([]);
   const [currentPlayer, setCurrentPlayer] = useState(0);
