@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import iconLogo from "../assets/logo.svg";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -74,7 +74,7 @@ const iconsArray = [
 
 function GamePage() {
   const location = useLocation();
-  const {theme, gridSize } = location.state;
+  const { theme, gridSize } = location.state;
   const [players] = useState(location.state.players);
   const [flippedCount, setFlippedCount] = useState(0);
   const [flippedIndexes, setFlippedIndexes] = useState([]);
@@ -83,6 +83,7 @@ function GamePage() {
   const [timer, setTimer] = useState(0);
   const [moves, setMoves] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isTimerRunning, setIsTimerRunning] = useState(true);
 
   const gridColumns = gridSize.split("x")[0];
 
@@ -186,13 +187,13 @@ function GamePage() {
 
   useEffect(() => {
     let interval;
-    if (players === 1 && !gameOver) {
+    if (players === 1 && !gameOver && isTimerRunning) {
       interval = setInterval(() => {
         setTimer((prev) => prev + 1);
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [players, gameOver]);
+  }, [players, gameOver, isTimerRunning]);
 
   const formattedTime = React.useMemo(() => {
     const minutes = Math.floor(timer / 60)
@@ -202,25 +203,59 @@ function GamePage() {
     return `${minutes}:${seconds}`;
   }, [timer]);
 
+  useEffect(() => {
+    if (isTimerRunning && isMenuOpen) {
+      setIsTimerRunning(false);
+    }
+  }, [isMenuOpen]);
+
   const circleSize =
     gridSize === "4x4"
-      ? "72.5px"
+      ? "w-[72.5px] h-[72.5px] tablet:w-[118px] tablet:h-[118px]"
       : gridSize === "6x6"
-      ? "47px"
-      : "default size";
+      ? "w-[47px] h-[47px] tablet:w-[82px] tablet:h-[82px]"
+      : "";
   const gapSize =
-    gridSize === "4x4" ? "12px" : gridSize === "6x6" ? "9px" : "default";
+    gridSize === "4x4"
+      ? "w-[12px] tablet:w-[20px]"
+      : gridSize === "6x6"
+      ? "w-[9px] tablet:w-[16px] "
+      : "";
+
+  const handleRestart = () => {
+    window.location.reload();
+  };
+
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    navigate("/");
+  };
 
   return (
-    <div className="p-[24px] box-border flex flex-col items-center">
+    <div className="p-[24px] box-border flex flex-col items-center tablet:p-[40px]">
       <div id="header" className="w-full flex justify-between items-center">
-        <img className="w-[92px]" src={iconLogo} alt="" />
+        <img className="w-[92px] tablet:w-[153px]" src={iconLogo} alt="" />
         <button
-          className="w-[78px] h-[40px] rounded-full bg-yellowButton text-logoColor text-center text-[16px] font-atkinson font-700"
+          className="w-[78px] h-[40px] rounded-full bg-yellowButton text-logoColor text-center text-[16px] font-atkinson font-700 tablet:hidden"
           onClick={() => setIsMenuOpen(true)}
         >
           Menu
         </button>
+        <div className="hidden tablet:flex gap-[16px] " id="tablet-menu">
+          <button
+            onClick={handleRestart}
+            className="bg-yellowButton text-logoColor text-center text-[20px] font-atkinson font-700 w-[127px] h-[52px] rounded-[26px]"
+          >
+            Restart
+          </button>
+          <button
+            onClick={handleBack}
+            className="bg-playergray text-timerColor text-center text-[20px] font-atkinson font-700 w-[149px] h-[52px] rounded-[26px]"
+          >
+            New Game
+          </button>
+        </div>
       </div>
       <div
         id="grid_container"
@@ -228,16 +263,15 @@ function GamePage() {
           gridTemplateColumns: `repeat(${gridColumns}, 1fr)`,
           gap: gapSize,
         }}
-        className="mt-[80px] grid items-center justify-center h-[327px] w-[327px]"
+        className="mt-[80px] grid items-center justify-center h-[327px] w-[327px] tablet:mt-[157px] tablet:w-[532px] tablet:h-[532px]"
       >
         {items.map((item, index) => (
           <div
             key={index}
             id="circle"
-            className={`rounded-full flex justify-center items-center ${
+            className={`rounded-full flex justify-center items-center  ${circleSize}  ${
               item.isClicked || item.isMatch ? "bg-selectBlue" : "bg-bodyColor"
             } ${item.isMatch ? "bg-yellowButton" : ""}`}
-            style={{ width: circleSize, height: circleSize }}
             onClick={() => handleClick(index)}
           >
             {(item.isClicked || item.isMatch) &&
@@ -256,26 +290,36 @@ function GamePage() {
       </div>
 
       {players > 1 && (
-        <div className="relative flex gap-[25px] justify-center mt-[102px] w-full">
+        <div className="relative flex gap-[25px] justify-center mt-[102px] w-full tablet:mt-[124px] ">
           {Array.from({ length: players }, (_, i) => i + 1).map((player) => (
             <div
               key={player}
               id={`player ${player}`}
-              className={`w-full h-[70px] bg-playergray rounded-[5px] flex  items-center flex-col ${
+              className={`w-full h-[70px] bg-playergray rounded-[5px] flex  items-center flex-col  ${
                 player - 1 === currentPlayer
                   ? "bg-yellowButton"
                   : "bg-playergray"
               }`}
             >
               {player - 1 === currentPlayer && (
-                <div id="triangle" className="absolute top-[-60px]  w-0 h-0 border-transparent border-[20px] border-solid border-t-[50px] border-l-[20px] border-r-[20px] border-b-yellowButton"></div>
+                <div
+                  id="triangle"
+                  className="absolute top-[-60px]  w-0 h-0 border-transparent border-[20px] border-solid border-t-[50px] border-l-[20px] border-r-[20px] border-b-yellowButton"
+                ></div>
               )}
               <p
-                className={`text-[15px] font-700 font-atkinson mt-[10px] ${
+                className={`text-[15px] font-700 font-atkinson mt-[10px] tablet:hidden ${
                   player - 1 === currentPlayer ? "text-white" : "text-spanBlue"
                 }`}
               >
-                P{player}
+                P{player} 
+              </p>
+              <p
+                className={`text-[15px] font-700 font-atkinson mt-[10px] hidden tablet:block ${
+                  player - 1 === currentPlayer ? "text-white" : "text-spanBlue"
+                }`}
+              >
+                Player {player} 
               </p>
               <p
                 className={`text-[24px] font-700 font-atkinson ${
@@ -318,7 +362,12 @@ function GamePage() {
           time={timer}
         />
       )}
-      {isMenuOpen && <MenuHamburger closeMenu={() => setIsMenuOpen(false)} />}
+      {isMenuOpen && (
+        <MenuHamburger
+          closeMenu={() => setIsMenuOpen(false)}
+          setIsTimerRunning={setIsTimerRunning}
+        />
+      )}
     </div>
   );
 }

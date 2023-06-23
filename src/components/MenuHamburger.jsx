@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function MenuHamburger({ closeMenu }) {
+function MenuHamburger({ closeMenu, setIsTimerRunning }) {
   const handleRestart = () => {
     window.location.reload();
   };
@@ -10,6 +10,11 @@ function MenuHamburger({ closeMenu }) {
 
   const handleClick = () => {
     navigate("/");
+  };
+
+  const handleResumeGame = () => {
+    setIsTimerRunning(true);
+    closeMenu();
   };
 
   return (
@@ -32,7 +37,7 @@ function MenuHamburger({ closeMenu }) {
         </button>
         <button
           className="h-[48px] flex-shrink-0 rounded-[24px] bg-playergray text-bodyColor text-center text-[18px] font-atkinson font-700"
-          onClick={closeMenu}
+          onClick={handleResumeGame}
         >
           Resume Game
         </button>
