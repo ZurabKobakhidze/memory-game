@@ -189,8 +189,14 @@ function GamePage() {
     let interval;
     if (players === 1 && !gameOver && isTimerRunning) {
       interval = setInterval(() => {
-        setTimer((prev) => prev + 1);
+        if (!isGameOver){
+          setTimer((prev) => prev + 1);
+        }else{
+          clearInterval(interval);
+        }
+        
       }, 1000);
+
     }
     return () => clearInterval(interval);
   }, [players, gameOver, isTimerRunning]);
@@ -380,6 +386,8 @@ function GamePage() {
           scores={scores}
           moves={moves}
           time={timer}
+
+          
         />
       )}
       {isMenuOpen && (
